@@ -53,6 +53,7 @@ export default function OrderPreview({
 
   const [orderError, setOrderError] = useState<string | null>(null);
   const [paymentSuccess, setPaymentSuccess] = useState(false);
+  const [orderCreated, setOrderCreated] = useState(false);
 
   const selectedCartItems = cartItems
     .filter((item) => selectedItems.includes(item.productId))
@@ -60,6 +61,12 @@ export default function OrderPreview({
       ...item,
       size: item.size === null ? undefined : item.size, 
     }));
+
+  useEffect(() => {
+    if (!currentOrder && !processing && !orderCreated) {
+      handleCreateOrder();
+    }
+  }, []);
 
   useEffect(() => {
     return () => {
@@ -74,7 +81,10 @@ export default function OrderPreview({
   }, [error]);
 
   const handleCreateOrder = async () => {
+    if (orderCreated) return;
+    
     setOrderError(null);
+    setOrderCreated(true);
 
     const orderData = {
       shippingAddress: {
@@ -105,7 +115,8 @@ export default function OrderPreview({
 
     const result = await dispatch(createOrder(orderData));
     if (createOrder.fulfilled.match(result)) {
-      // Order created successfully
+    } else {
+      setOrderCreated(false); 
     }
   };
 
@@ -185,23 +196,32 @@ export default function OrderPreview({
     );
   }
 
-  if (!currentOrder && !processing) {
+  if (processing && !currentOrder) {
     return (
-      <div className="text-center py-8">
-        <button
-          onClick={handleCreateOrder}
-          className="px-8 py-3 bg-[#5D5FEF] text-white rounded-xl font-semibold hover:bg-[#4B4DC9] transition-all"
-        >
-          Review Order
-        </button>
+      <div className="flex justify-center items-center py-12">
+        <div className="text-center">
+          <Loader2 size={32} className="text-[#5D5FEF] animate-spin mx-auto mb-4" />
+          <p className="text-sm text-gray-600">Creating your order...</p>
+        </div>
       </div>
     );
   }
 
-  if (processing && !currentOrder) {
+  if (!currentOrder && !processing) {
     return (
-      <div className="flex justify-center items-center py-12">
-        <Loader2 size={32} className="text-[#5D5FEF] animate-spin" />
+      <div className="text-center py-8">
+        <div className="p-4 bg-red-50 text-red-600 rounded-lg mb-4">
+          <p className="text-sm">Failed to create order. Please try again.</p>
+        </div>
+        <button
+          onClick={() => {
+            setOrderCreated(false);
+            handleCreateOrder();
+          }}
+          className="px-8 py-3 bg-[#5D5FEF] text-white rounded-xl font-semibold hover:bg-[#4B4DC9] transition-all"
+        >
+          Try Again
+        </button>
       </div>
     );
   }
