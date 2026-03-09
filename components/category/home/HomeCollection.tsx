@@ -238,7 +238,7 @@ const SubcategoriesSlider = memo(({
                     key={index}
                     className={`h-1 rounded-full transition-all duration-300 ${
                       index === activeIndex
-                        ? 'w-6 bg-amber-600'
+                        ? 'w-6 bg-[#5D5FEF]'
                         : 'w-1 bg-gray-300'
                     }`}
                   />
@@ -275,7 +275,6 @@ const ProductCard = memo(
 
     const productId =
       product?.id?.toString() || (product as any)?._id?.toString();
-
 
     const isWishlisted = productId
       ? wishlistItems.some((item) => item.productId === productId)
@@ -424,7 +423,7 @@ const ProductCard = memo(
 
               {/* In Cart Badge */}
               {isInCart && (
-                <div className="absolute top-2 left-2 bg-[#5D5FEF]  text-white text-[10px] font-bold px-1.5 py-0.5 rounded-sm z-10 flex items-center gap-1">
+                <div className="absolute top-2 left-2 bg-[#5D5FEF] text-white text-[10px] font-bold px-1.5 py-0.5 rounded-sm z-10 flex items-center gap-1">
                   <CheckCircle size={10} />
                   In Cart
                 </div>
@@ -449,7 +448,7 @@ const ProductCard = memo(
                       isWishlisted ? "fill-red-500 text-red-500" : "text-gray-700"
                     }
                   />
-                
+              
               </button>
             </div>
           </Link>
@@ -457,7 +456,7 @@ const ProductCard = memo(
           {/* Product Details */}
           <div className="p-2 sm:p-2.5 flex flex-col flex-1">
             <Link href={`/product/${product.id || product.id}`}>
-              <h3 className="text-xs sm:text-sm font-medium text-gray-900 line-clamp-2 min-h-[2rem] sm:min-h-[2.2rem] mb-1 hover:text-amber-600 transition-colors">
+              <h3 className="text-xs sm:text-sm font-medium text-gray-900 line-clamp-2 min-h-[2rem] sm:min-h-[2.2rem] mb-1 hover:text-[#5D5FEF] transition-colors">
                 {product.title || "Untitled Product"}
               </h3>
             </Link>
@@ -484,7 +483,7 @@ const ProductCard = memo(
                       <Trash2 size={10} />
                       <span>Remove from Cart</span>
                     </>
-                  
+                 
                 </button>
               ) : (
                 <button
@@ -492,12 +491,12 @@ const ProductCard = memo(
                   disabled={localCartLoading || !user}
                   className="w-full bg-[#5D5FEF] hover:bg-[#4B4DC9] text-white py-1.5 rounded-md font-medium text-[10px] sm:text-xs transition-all duration-300 flex items-center justify-center gap-1 disabled:opacity-50"
                 >
-                 
+                  
                     <>
                       <ShoppingBag size={10} />
                       <span>Add to Cart</span>
                     </>
-                  
+                 
                 </button>
               )}
             </div>
@@ -604,7 +603,7 @@ const Pagination = memo(
           className={`flex items-center justify-center w-7 h-7 sm:w-8 sm:h-8 rounded-md text-xs ${
             currentPage === 1 || loading
               ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-              : "bg-white text-gray-600 hover:bg-amber-600 hover:text-white shadow-sm"
+              : "bg-white text-gray-600 hover:bg-[#5D5FEF] hover:text-white shadow-sm"
           } transition-all duration-200`}
           aria-label="Previous page"
         >
@@ -635,7 +634,7 @@ const Pagination = memo(
               disabled={loading}
               className={`w-7 h-7 sm:w-8 sm:h-8 rounded-md font-medium text-xs transition-all duration-200 ${
                 currentPage === page
-                  ? "bg-amber-600 text-white shadow-sm hover:bg-amber-700"
+                  ? "bg-[#5D5FEF] text-white shadow-sm hover:bg-[#4B4DC9]"
                   : "bg-white text-gray-600 hover:bg-gray-100 shadow-sm"
               } ${loading ? "opacity-50 cursor-not-allowed" : ""}`}
               aria-label={`Go to page ${page}`}
@@ -653,7 +652,7 @@ const Pagination = memo(
           className={`flex items-center justify-center w-7 h-7 sm:w-8 sm:h-8 rounded-md text-xs ${
             currentPage === totalPages || loading
               ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-              : "bg-white text-gray-600 hover:bg-amber-600 hover:text-white shadow-sm"
+              : "bg-white text-gray-600 hover:bg-[#5D5FEF] hover:text-white shadow-sm"
           } transition-all duration-200`}
           aria-label="Next page"
         >
@@ -674,6 +673,10 @@ interface HomeCollectionProps {
 export default memo(function HomeCollection({ user }: HomeCollectionProps) {
   const dispatch = useAppDispatch();
   const [selectedSubcategory, setSelectedSubcategory] = useState<string | null>(null);
+  
+  // Use refs to prevent multiple fetches
+  const hasFetchedWishlist = useRef(false);
+  const hasFetchedCart = useRef(false);
 
   const { homeProducts, homePagination, loading, error } = useAppSelector(
     (state) => ({
@@ -694,22 +697,47 @@ export default memo(function HomeCollection({ user }: HomeCollectionProps) {
     { name: "Books", icon: BookOpen },
   ];
 
+  // Fetch wishlist and cart only once
   useEffect(() => {
     if (user) {
-      dispatch(fetchWishlist());
-      dispatch(fetchCart());
+      if (!hasFetchedWishlist.current) {
+        hasFetchedWishlist.current = true;
+        dispatch(fetchWishlist());
+      }
+      
+      if (!hasFetchedCart.current) {
+        hasFetchedCart.current = true;
+        dispatch(fetchCart());
+      }
     }
+    
+    // Reset refs when user logs out
+    return () => {
+      if (!user) {
+        hasFetchedWishlist.current = false;
+        hasFetchedCart.current = false;
+      }
+    };
   }, [dispatch, user]);
 
+  // Fetch products only when needed (page change or subcategory change)
   useEffect(() => {
-    dispatch(
-      fetchHomeCategoryProducts({
-        page: homePagination.page,
-        limit: homePagination.productsPerPage,
-        subcategory: selectedSubcategory || undefined,
-      }),
-    );
-  }, [dispatch, homePagination.page, homePagination.productsPerPage, selectedSubcategory]);
+    if (user) {
+      dispatch(
+        fetchHomeCategoryProducts({
+          page: homePagination.page,
+          limit: homePagination.productsPerPage,
+          subcategory: selectedSubcategory || undefined,
+        }),
+      );
+    }
+  }, [
+    dispatch, 
+    user, 
+    homePagination.page, 
+    homePagination.productsPerPage, 
+    selectedSubcategory
+  ]);
 
   const handleSubcategoryClick = (subcategory: string) => {
     setSelectedSubcategory(prev => prev === subcategory ? null : subcategory);
@@ -727,17 +755,6 @@ export default memo(function HomeCollection({ user }: HomeCollectionProps) {
     [dispatch],
   );
 
-  // if (loading && homeProducts.length === 0) {
-  //   return (
-  //     <section className="w-full py-4 sm:py-6">
-  //       <div className="flex flex-col items-center justify-center min-h-[300px]">
-  //         <Loader2 size={32} className="text-amber-600 animate-spin mb-3" />
-  //         <p className="text-sm text-gray-600">Loading products...</p>
-  //       </div>
-  //     </section>
-  //   );
-  // }
-
   if (error) {
     return (
       <section className="w-full py-4 sm:py-6">
@@ -752,20 +769,10 @@ export default memo(function HomeCollection({ user }: HomeCollectionProps) {
                 }),
               )
             }
-            className="px-4 py-1.5 bg-amber-600 text-white text-sm rounded-md hover:bg-amber-700 transition-colors"
+            className="px-4 py-1.5 bg-[#5D5FEF] text-white text-sm rounded-md hover:bg-[#4B4DC9] transition-colors"
           >
             Try Again
           </button>
-        </div>
-      </section>
-    );
-  }
-
-  if (!homeProducts || homeProducts.length === 0) {
-    return (
-      <section className="w-full py-4 sm:py-6">
-        <div className="text-center py-8">
-          <p className="text-sm text-gray-600">No products found</p>
         </div>
       </section>
     );
@@ -789,14 +796,14 @@ export default memo(function HomeCollection({ user }: HomeCollectionProps) {
         {selectedSubcategory && (
           <button
             onClick={() => setSelectedSubcategory(null)}
-            className="text-xs text-amber-600 font-medium hover:underline"
+            className="text-xs text-[#5D5FEF] font-medium hover:underline"
           >
             Clear Filter
           </button>
         )}
       </div>
 
-      {/* Subcategories Slider  */}
+      {/* Subcategories Slider */}
       <SubcategoriesSlider
         subcategories={subcategories}
         selectedSubcategory={selectedSubcategory}
@@ -805,29 +812,39 @@ export default memo(function HomeCollection({ user }: HomeCollectionProps) {
 
       {/* Products Grid */}
       <div id="products-grid" className="mt-8 sm:mt-10">
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={selectedSubcategory || 'all'}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
-            className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-2 sm:gap-3"
-          >
-            {homeProducts.map((product, index) => {
-              const productId = product?.id || (product as any)?._id;
-              const productKey = productId
-                ? `product-${productId}`
-                : `product-fallback-${index}-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
+        {loading && homeProducts.length === 0 ? (
+          <div className="flex justify-center items-center min-h-[400px]">
+            <Loader2 size={40} className="text-[#5D5FEF] animate-spin" />
+          </div>
+        ) : homeProducts.length === 0 ? (
+          <div className="text-center py-8 bg-white rounded-lg">
+            <p className="text-gray-500">No products found in this category</p>
+          </div>
+        ) : (
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={selectedSubcategory || 'all'}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.3 }}
+              className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-2 sm:gap-3"
+            >
+              {homeProducts.map((product, index) => {
+                const productId = product?.id || (product as any)?._id;
+                const productKey = productId
+                  ? `product-${productId}`
+                  : `product-fallback-${index}-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
 
-              return <ProductCard key={productKey} product={product} user={user} />;
-            })}
-          </motion.div>
-        </AnimatePresence>
+                return <ProductCard key={productKey} product={product} user={user} />;
+              })}
+            </motion.div>
+          </AnimatePresence>
+        )}
       </div>
 
       {/* Pagination */}
-      {homePagination.totalPages > 1 && (
+      {homePagination.totalPages > 1 && !loading && (
         <Pagination
           currentPage={homePagination.page}
           totalPages={homePagination.totalPages}

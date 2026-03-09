@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -56,13 +56,28 @@ export default function SimilarProducts({ currentProductId, category }: SimilarP
   const [currentIndex, setCurrentIndex] = useState(0);
   const itemsPerView = 5;
 
+  // Use refs to prevent multiple fetches
+  const hasFetchedCart = useRef(false);
+  const hasFetchedWishlist = useRef(false);
+  const hasFetchedSimilarProducts = useRef(false);
+
+  // Fetch cart and wishlist only once
   useEffect(() => {
-    dispatch(fetchWishlist());
-    dispatch(fetchCart());
+    if (!hasFetchedCart.current) {
+      hasFetchedCart.current = true;
+      dispatch(fetchCart());
+    }
+    
+    if (!hasFetchedWishlist.current) {
+      hasFetchedWishlist.current = true;
+      dispatch(fetchWishlist());
+    }
   }, [dispatch]);
 
+  // Fetch similar products only when needed
   useEffect(() => {
-    if (category && currentProductId) {
+    if (category && currentProductId && !hasFetchedSimilarProducts.current) {
+      hasFetchedSimilarProducts.current = true;
       dispatch(fetchSimilarProducts({ 
         category, 
         currentProductId, 
@@ -72,6 +87,8 @@ export default function SimilarProducts({ currentProductId, category }: SimilarP
 
     return () => {
       dispatch(clearSimilarProducts());
+      // Reset the ref when component unmounts
+      hasFetchedSimilarProducts.current = false;
     };
   }, [dispatch, category, currentProductId]);
 
@@ -206,15 +223,16 @@ export default function SimilarProducts({ currentProductId, category }: SimilarP
     }
   };
 
-  // if (loading) {
-  //   return (
-  //     <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
-  //       <div className="flex justify-center items-center">
-  //         <Loader2 size={32} className="text-[#5D5FEF] animate-spin" />
-  //       </div>
-  //     </div>
-  //   );
-  // }
+  // Show loading state
+  if (loading) {
+    return (
+      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
+        <div className="flex justify-center items-center">
+          <Loader2 size={32} className="text-[#5D5FEF] animate-spin" />
+        </div>
+      </div>
+    );
+  }
 
   if (error || products.length === 0) {
     return null; 
@@ -352,7 +370,7 @@ export default function SimilarProducts({ currentProductId, category }: SimilarP
                               <ShoppingBag size={12} />
                               <span>Add</span>
                             </>
-                          
+                         
                         </button>
                       )}
                     </div>

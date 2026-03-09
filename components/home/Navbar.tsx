@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -41,19 +41,26 @@ export default function Navbar({
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [showAddressManager, setShowAddressManager] = useState(false);
   const pathname = usePathname();
-
+  const hasFetchedWishlist = useRef(false);
   const dispatch = useAppDispatch();
   const { items: cartItems } = useAppSelector((state) => state.cart);
   const { items: wishlistItems, loading: wishlistLoading } = useAppSelector(
     (state) => state.wishlist,
   );
 
-  useEffect(() => {
-    if (user) {
+ useEffect(() => {
+    if (user && !hasFetchedWishlist.current && !wishlistLoading && wishlistItems.length === 0) {
+      hasFetchedWishlist.current = true;
       dispatch(fetchWishlist());
     }
-  }, [dispatch, user]);
+  }, [dispatch, user]); // Remove wishlistItems.length and wishlistLoading from dependencies
 
+  // Reset the ref when user changes (login/logout)
+  useEffect(() => {
+    if (!user) {
+      hasFetchedWishlist.current = false;
+    }
+  }, [user]);
   // Navigation menus
   const navMenus = [
     { name: "Men", href: "/category/men" },

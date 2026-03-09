@@ -464,12 +464,12 @@ const ProductCard = memo(
                   disabled={localCartLoading || !user}
                   className="w-full bg-red-500 hover:bg-red-600 text-white py-1.5 rounded-md font-medium text-[10px] sm:text-xs transition-all duration-300 flex items-center justify-center gap-1 disabled:opacity-50"
                 >
-                  
+                 
                     <>
                       <Trash2 size={10} />
                       <span>Remove from Cart</span>
                     </>
-                 
+                  
                 </button>
               ) : (
                 <button
@@ -482,7 +482,7 @@ const ProductCard = memo(
                       <ShoppingBag size={10} />
                       <span>Add to Cart</span>
                     </>
-                  
+                 
                 </button>
               )}
             </div>
@@ -653,6 +653,11 @@ interface MenCollectionProps {
 export default memo(function MenCollection({ user }: MenCollectionProps) {
   const dispatch = useAppDispatch();
   const [selectedSubcategory, setSelectedSubcategory] = useState<string | null>(null);
+  
+  // Use refs to prevent multiple fetches
+  const hasFetchedWishlist = useRef(false);
+  const hasFetchedCart = useRef(false);
+  const hasInitialFetch = useRef(false);
 
   const { menProducts, menPagination, loading, error } = useAppSelector(
     (state) => ({
@@ -670,22 +675,50 @@ export default memo(function MenCollection({ user }: MenCollectionProps) {
     { name: "Accessories", icon: Watch },
   ];
 
+  // Fetch wishlist and cart only once
   useEffect(() => {
     if (user) {
-      dispatch(fetchWishlist());
-      dispatch(fetchCart());
+      if (!hasFetchedWishlist.current) {
+        hasFetchedWishlist.current = true;
+        dispatch(fetchWishlist());
+      }
+      
+      if (!hasFetchedCart.current) {
+        hasFetchedCart.current = true;
+        dispatch(fetchCart());
+      }
     }
+    
+    // Reset refs when user logs out
+    return () => {
+      if (!user) {
+        hasFetchedWishlist.current = false;
+        hasFetchedCart.current = false;
+        hasInitialFetch.current = false;
+      }
+    };
   }, [dispatch, user]);
 
+  // Fetch products only when needed (initial load, page change, or subcategory change)
   useEffect(() => {
-    dispatch(
-      fetchMenCategoryProducts({
-        page: menPagination.page,
-        limit: menPagination.productsPerPage,
-        subcategory: selectedSubcategory || undefined,
-      }),
-    );
-  }, [dispatch, menPagination.page, menPagination.productsPerPage, selectedSubcategory]);
+    // Only fetch if we have a user and we haven't fetched initial data OR if filters change
+    if (user) {
+      // Always fetch when subcategory or page changes, even if we've fetched before
+      dispatch(
+        fetchMenCategoryProducts({
+          page: menPagination.page,
+          limit: menPagination.productsPerPage,
+          subcategory: selectedSubcategory || undefined,
+        }),
+      );
+    }
+  }, [
+    dispatch, 
+    user, 
+    menPagination.page, 
+    menPagination.productsPerPage, 
+    selectedSubcategory
+  ]);
 
   const handleSubcategoryClick = (subcategory: string) => {
     setSelectedSubcategory(prev => prev === subcategory ? null : subcategory);
@@ -702,16 +735,6 @@ export default memo(function MenCollection({ user }: MenCollectionProps) {
     },
     [dispatch],
   );
-
-  // if (loading && menProducts.length === 0) {
-  //   return (
-  //     <section className="w-full py-6">
-  //       <div className="flex justify-center items-center min-h-[400px]">
-  //         <Loader2 size={40} className="text-[#5D5FEF] animate-spin" />
-  //       </div>
-  //     </section>
-  //   );
-  // }
 
   if (error) {
     return (
@@ -769,7 +792,11 @@ export default memo(function MenCollection({ user }: MenCollectionProps) {
 
       {/* Products Grid */}
       <div id="products-grid" className="mt-8 sm:mt-10">
-        {menProducts.length === 0 ? (
+        {loading && menProducts.length === 0 ? (
+          <div className="flex justify-center items-center min-h-[400px]">
+            <Loader2 size={40} className="text-[#5D5FEF] animate-spin" />
+          </div>
+        ) : menProducts.length === 0 ? (
           <div className="text-center py-8 bg-white rounded-lg">
             <p className="text-gray-500">No products found in this category</p>
           </div>
@@ -803,7 +830,7 @@ export default memo(function MenCollection({ user }: MenCollectionProps) {
         )}
       </div>
 
-      {menPagination.totalPages > 1 && (
+      {menPagination.totalPages > 1 && !loading && (
         <Pagination
           currentPage={menPagination.page}
           totalPages={menPagination.totalPages}

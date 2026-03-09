@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import NextImage from "next/image";
 import Link from "next/link";
@@ -37,7 +37,7 @@ export default function WishlistPage() {
   const [customUser, setCustomUser] = useState<any>(null);
   const [showProfile, setShowProfile] = useState(false);
   const [pageLoading, setPageLoading] = useState(true);
-  
+  const hasFetchedWishlist = useRef(false);
   const { items: wishlistItems, loading, error, totalItems, totalValue } = useAppSelector(
     (state) => state.wishlist
   );
@@ -77,11 +77,19 @@ export default function WishlistPage() {
   }, [router]);
 
   // Fetch wishlist on mount
-  useEffect(() => {
-    if (customUser || firebaseUser) {
+useEffect(() => {
+    const user = customUser || firebaseUser;
+    if (user && !hasFetchedWishlist.current && !loading) {
+      hasFetchedWishlist.current = true;
       dispatch(fetchWishlist());
     }
-  }, [dispatch, customUser, firebaseUser]);
+  }, [dispatch, customUser, firebaseUser, loading]);
+
+  useEffect(() => {
+    if (!customUser && !firebaseUser) {
+      hasFetchedWishlist.current = false;
+    }
+  }, [customUser, firebaseUser]);
 
   // Show error toast
   useEffect(() => {

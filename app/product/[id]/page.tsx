@@ -65,6 +65,12 @@ export default function ProductPage() {
   const [isZoomed, setIsZoomed] = useState(false);
   const imageRef = useRef<HTMLDivElement>(null);
 
+  // Use refs to prevent multiple fetches
+  const hasFetchedWishlist = useRef(false);
+  const hasFetchedCart = useRef(false);
+  const hasFetchedProduct = useRef(false);
+  const hasFetchedReviews = useRef(false);
+
   const {
     product,
     loading: productLoading,
@@ -91,23 +97,53 @@ export default function ProductPage() {
   const [localWishlistLoading, setLocalWishlistLoading] = useState(false);
   const [localCartLoading, setLocalCartLoading] = useState(false);
 
+  // Fetch product and reviews only once
   useEffect(() => {
     if (productId) {
-      dispatch(fetchProductById(productId));
-      dispatch(fetchProductReviews(productId));
+      if (!hasFetchedProduct.current) {
+        hasFetchedProduct.current = true;
+        dispatch(fetchProductById(productId));
+      }
+      
+      if (!hasFetchedReviews.current) {
+        hasFetchedReviews.current = true;
+        dispatch(fetchProductReviews(productId));
+      }
     }
+    
     return () => {
       dispatch(clearProduct());
+      // Reset refs when unmounting
+      hasFetchedProduct.current = false;
+      hasFetchedReviews.current = false;
     };
   }, [dispatch, productId]);
 
+  // Fetch wishlist and cart only once when user is available
   useEffect(() => {
-    if (customUser || firebaseUser) {
-      dispatch(fetchWishlist());
-      dispatch(fetchCart());
+    const user = customUser || firebaseUser;
+    if (user) {
+      if (!hasFetchedWishlist.current) {
+        hasFetchedWishlist.current = true;
+        dispatch(fetchWishlist());
+      }
+      
+      if (!hasFetchedCart.current) {
+        hasFetchedCart.current = true;
+        dispatch(fetchCart());
+      }
     }
+    
+    // Reset refs when user logs out
+    return () => {
+      if (!user) {
+        hasFetchedWishlist.current = false;
+        hasFetchedCart.current = false;
+      }
+    };
   }, [dispatch, customUser, firebaseUser]);
 
+  // Update wishlist state
   useEffect(() => {
     if (product && wishlistItems.length > 0) {
       setIsWishlisted(
@@ -118,6 +154,7 @@ export default function ProductPage() {
     }
   }, [product, wishlistItems]);
 
+  // Update cart state
   useEffect(() => {
     if (product && cartItems.length > 0) {
       setIsInCart(
@@ -422,7 +459,7 @@ export default function ProductPage() {
                     disabled={isLoading}
                     className="absolute top-4 right-4 p-2.5 bg-white rounded-full shadow-lg hover:shadow-xl transition-all z-10 disabled:opacity-50"
                   >
-                   
+                    
                       <Heart
                         size={20}
                         className={
@@ -431,7 +468,7 @@ export default function ProductPage() {
                             : "text-gray-700"
                         }
                       />
-                    
+                   
                   </motion.button>
 
                   {/* Zoom Indicator */}
@@ -559,17 +596,12 @@ export default function ProductPage() {
                       disabled={localCartLoading || cartLoading}
                       className="flex-1 bg-red-500 hover:bg-red-600 text-white py-3 px-6 rounded-xl font-semibold transition-all active:scale-95 flex items-center justify-center gap-2 disabled:opacity-50"
                     >
-                      {localCartLoading ? (
-                        <>
-                          
-                          Removing...
-                        </>
-                      ) : (
+                      
                         <>
                           <Trash2 size={18} />
                           Remove from Cart
                         </>
-                      )}
+                      
                     </button>
                   ) : (
                     <button
@@ -577,17 +609,12 @@ export default function ProductPage() {
                       disabled={localCartLoading || cartLoading}
                       className="flex-1 bg-[#5D5FEF] hover:bg-[#4B4DC9] text-white py-3 px-6 rounded-xl font-semibold transition-all active:scale-95 flex items-center justify-center gap-2 disabled:opacity-50"
                     >
-                      {localCartLoading ? (
-                        <>
-                          
-                          Adding...
-                        </>
-                      ) : (
+                      
                         <>
                           <ShoppingBag size={18} />
                           Add to Cart
                         </>
-                      )}
+                      
                     </button>
                   )}
 
@@ -608,7 +635,7 @@ export default function ProductPage() {
                         />
                         {isWishlisted ? "Wishlisted" : "Add to Wishlist"}
                       </>
-                    
+                   
                   </button>
                 </div>
 

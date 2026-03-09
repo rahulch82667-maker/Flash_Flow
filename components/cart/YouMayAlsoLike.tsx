@@ -58,7 +58,11 @@ export default function YouMayAlsoLike() {
     message: string;
     type: "success" | "error";
   } | null>(null);
-  const [hasFetched, setHasFetched] = useState(false);
+  
+  // Use refs to prevent multiple fetches
+  const hasFetchedCart = useRef(false);
+  const hasFetchedWishlist = useRef(false);
+  const hasFetchedRecommendations = useRef(false);
 
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
@@ -70,15 +74,24 @@ export default function YouMayAlsoLike() {
       .join(",");
   }, [cartItems]);
 
+  // Fetch cart and wishlist only once
   useEffect(() => {
-    dispatch(fetchCart());
-    dispatch(fetchWishlist());
+    if (!hasFetchedCart.current) {
+      hasFetchedCart.current = true;
+      dispatch(fetchCart());
+    }
+    
+    if (!hasFetchedWishlist.current) {
+      hasFetchedWishlist.current = true;
+      dispatch(fetchWishlist());
+    }
   }, [dispatch]);
 
+  // Fetch recommendations only once
   useEffect(() => {
     const fetchRecommendations = async () => {
-      // Prevent re-fetching if we already have products and cart IDs haven't changed significantly
-      if (hasFetched && recommendedProducts.length > 0) {
+      // Prevent multiple fetches
+      if (hasFetchedRecommendations.current) {
         return;
       }
 
@@ -103,7 +116,7 @@ export default function YouMayAlsoLike() {
 
         const data = await response.json();
         setRecommendedProducts(data.products || []);
-        setHasFetched(true);
+        hasFetchedRecommendations.current = true;
       } catch (err) {
         console.error("Error fetching recommendations:", err);
         setError("Failed to load recommendations");
@@ -112,12 +125,8 @@ export default function YouMayAlsoLike() {
       }
     };
 
-    // Only fetch if we haven't fetched before or if cart items are added/removed (not updated)
-    // We check if the number of cart items has changed, not the items themselves
-    if (!hasFetched) {
-      fetchRecommendations();
-    }
-  }, [hasFetched]); // Remove cartItems dependency
+    fetchRecommendations();
+  }, []); // Empty dependency array - run only once on mount
 
   // Update wishlist states
   useEffect(() => {
@@ -265,6 +274,17 @@ export default function YouMayAlsoLike() {
     }
   };
 
+  // Show loading state
+  if (loading) {
+    return (
+      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
+        <div className="flex justify-center items-center">
+          <Loader2 size={32} className="text-[#5D5FEF] animate-spin" />
+        </div>
+      </div>
+    );
+  }
+
   if (error || recommendedProducts.length === 0) {
     return null;
   }
@@ -357,20 +377,21 @@ export default function YouMayAlsoLike() {
                               : "Add to wishlist"
                           }
                         >
-                          <Heart
-                            size={14}
-                            className={
-                              isWishlisted
-                                ? "fill-red-500 text-red-500"
-                                : "text-gray-700"
-                            }
-                          />
+                          
+                            <Heart
+                              size={14}
+                              className={
+                                isWishlisted
+                                  ? "fill-red-500 text-red-500"
+                                  : "text-gray-700"
+                              }
+                            />
+                         
                         </button>
                       </div>
                     </Link>
 
-                    {/* Product Info - Fixed height structure */}
-                    {/* Product Info - Changed from fixed h-[130px] to min-h for flexibility */}
+                    {/* Product Info */}
                     <div className="flex flex-col flex-grow min-h-[140px]">
                       <Link href={`/product/${product._id}`} className="block">
                         <h3 className="text-xs sm:text-sm font-medium text-[#1B2559] line-clamp-2 mb-1 hover:text-[#5D5FEF] transition-colors">
@@ -378,12 +399,10 @@ export default function YouMayAlsoLike() {
                         </h3>
                       </Link>
 
-                      {/* Description: Removed h-8, allowed it to grow, increased line-clamp if you want more text */}
                       <p className="text-[10px] text-gray-500 line-clamp-3 mb-2 flex-grow">
                         {product.description}
                       </p>
 
-                      {/* Price and Button: mt-auto ensures this stays at the bottom */}
                       <div className="flex flex-col gap-2 mt-auto pt-2">
                         <span className="text-sm font-bold text-[#1B2559]">
                           ₹{product.price.toLocaleString()}
@@ -395,8 +414,12 @@ export default function YouMayAlsoLike() {
                             disabled={isCartLoading || cartLoading}
                             className="w-full flex items-center justify-center gap-2 p-1.5 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors disabled:opacity-50 text-[10px] sm:text-xs font-medium"
                           >
-                            <Trash2 size={14} />
-                            <span>Remove</span>
+                            
+                              <>
+                                <Trash2 size={14} />
+                                <span>Remove</span>
+                              </>
+                          
                           </button>
                         ) : (
                           <button
@@ -404,8 +427,12 @@ export default function YouMayAlsoLike() {
                             disabled={isCartLoading || cartLoading}
                             className="w-full bg-[#5D5FEF] hover:bg-[#4B4DC9] text-white py-1.5 rounded-md font-medium text-[10px] sm:text-xs transition-all duration-300 flex items-center justify-center gap-1 disabled:opacity-50"
                           >
-                            <ShoppingBag size={14} />
-                            <span>Add to Cart</span>
+                            
+                              <>
+                                <ShoppingBag size={14} />
+                                <span>Add to Cart</span>
+                              </>
+                           
                           </button>
                         )}
                       </div>
