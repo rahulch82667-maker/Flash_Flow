@@ -23,8 +23,9 @@ async function verifyAdmin(token: string) {
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  context: any
 ) {
+  const { params } = context;
   try {
     const token = (await cookies()).get("authToken")?.value;
     if (!token) {
@@ -64,8 +65,9 @@ export async function GET(
 
 export async function PATCH(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  context: any
 ) {
+  const { params } = context;
   try {
     const token = (await cookies()).get("authToken")?.value;
     if (!token) {
@@ -172,8 +174,9 @@ export async function PATCH(
 
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  context: any
 ) {
+  const { params } = context;
   try {
     const token = (await cookies()).get("authToken")?.value;
     if (!token) {
