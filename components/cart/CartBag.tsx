@@ -239,18 +239,25 @@ export default function CartBag({ onProceed }: CartBagProps) {
     setPromoSuccess(null);
 
     try {
-      const result = await dispatch(applyPromoCode({
-        code: promoInput.trim().toUpperCase(),
-        cartTotal: total
-      }));
+      const result = await dispatch(
+        applyPromoCode({
+          code: promoInput.trim().toUpperCase(),
+          cartTotal: total,
+        }),
+      );
 
       if (applyPromoCode.fulfilled.match(result)) {
         setPromoSuccess(`Promo code "${promoInput.toUpperCase()}" applied successfully!`);
         setPromoInput("");
         showToast("Promo code applied successfully");
+      } else if (applyPromoCode.rejected.match(result)) {
+        // payload contains our error string when rejectWithValue is used
+        const msg = (result.payload as string) || result.error?.message || "Failed to apply promo code";
+        setPromoError(msg);
       }
-    } catch (error) {
-      const errorMessage = (error as any)?.message || "Failed to apply promo code";
+    } catch (err) {
+      // unexpected errors
+      const errorMessage = (err as any)?.message || "Failed to apply promo code";
       setPromoError(errorMessage);
     }
   };
@@ -310,20 +317,20 @@ export default function CartBag({ onProceed }: CartBagProps) {
   const originalTotal = subtotal + deliveryCharge;
   const savings = discountAmount;
 
-  // Show loading state
-  if (loading && items.length === 0) {
-    return (
-      <div className="flex justify-center items-center min-h-[400px]">
-        <div className="text-center">
-          <Loader2
-            size={40}
-            className="text-[#5D5FEF] animate-spin mx-auto mb-4"
-          />
-          <p className="text-gray-600">Loading your cart...</p>
-        </div>
-      </div>
-    );
-  }
+  // // Show loading state
+  // if (loading && items.length === 0) {
+  //   return (
+  //     <div className="flex justify-center items-center min-h-[400px]">
+  //       <div className="text-center">
+  //         <Loader2
+  //           size={40}
+  //           className="text-[#5D5FEF] animate-spin mx-auto mb-4"
+  //         />
+  //         <p className="text-gray-600">Loading your cart...</p>
+  //       </div>
+  //     </div>
+  //   );
+  // }
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
@@ -705,11 +712,8 @@ export default function CartBag({ onProceed }: CartBagProps) {
                     disabled={operationLoading || !promoInput.trim()}
                     className="px-4 py-2 bg-[#5D5FEF] text-white text-sm font-medium rounded-lg hover:bg-[#4B4DC9] transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1"
                   >
-                    {operationLoading ? (
-                      <Loader2 size={14} className="animate-spin" />
-                    ) : (
-                      "Apply"
-                    )}
+                    
+                      Apply
                   </button>
                 </div>
 
@@ -738,7 +742,6 @@ export default function CartBag({ onProceed }: CartBagProps) {
           >
             {operationLoading ? (
               <>
-                <Loader2 size={16} className="animate-spin" />
                 Processing...
               </>
             ) : (
