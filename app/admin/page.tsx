@@ -9,6 +9,7 @@ import AddressesTab from "@/components/admin/AddressesTab";
 import CartsTab from "@/components/admin/CartsTab";
 import OrdersTab from "@/components/admin/OrdersTab";
 import PaymentsTab from "@/components/admin/PaymentsTab";
+import PromoCodesTab from "@/components/admin/PromoCodesTab";
 import Image from "next/image";
 import {
   LayoutDashboard,
@@ -39,6 +40,7 @@ import {
   Clock,
   Package2,
   CreditCard,
+  Tag,
 } from "lucide-react";
 import ProductsTab from "@/components/admin/ProductsTab";
 import { useAppDispatch, useAppSelector } from "@/lib/redux/hooks";
@@ -291,6 +293,12 @@ export default function AdminPage() {
           onClick={() => setActiveTab("orders")}
         />
         <SidebarLink
+          icon={<Tag size={20} />}
+          label="Promo Codes"
+          active={activeTab === "promos"}
+          onClick={() => setActiveTab("promos")}
+        />
+        <SidebarLink
           icon={<CreditCard size={20} />}
           label="Payments"
           active={activeTab === "payments"}
@@ -411,6 +419,19 @@ export default function AdminPage() {
               <Package size={20} className="sm:w-[22px] sm:h-[22px]" />
               <span className="text-[8px] sm:text-[10px] font-bold">
                 Orders
+              </span>
+            </button>
+            <button
+              onClick={() => setActiveTab("promos")}
+              className={`flex flex-col items-center gap-1 px-3 py-2 rounded-xl transition-all ${
+                activeTab === "promos"
+                  ? "text-[#5D5FEF] bg-[#5D5FEF]/10"
+                  : "text-[#A3AED0]"
+              }`}
+            >
+              <Tag size={20} className="sm:w-[22px] sm:h-[22px]" />
+              <span className="text-[8px] sm:text-[10px] font-bold">
+                Promos
               </span>
             </button>
             <button
@@ -904,7 +925,9 @@ export default function AdminPage() {
               <CartsTab />
             ) : activeTab === "orders"?(
               <OrdersTab />
-            ):activeTab === "payments"?(
+            ) : activeTab === "promos" ? (
+              <PromoCodesTab />
+            ) : activeTab === "payments"?(
               <PaymentsTab />
             ):null}
 
