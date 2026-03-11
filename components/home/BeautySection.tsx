@@ -555,7 +555,6 @@ export default memo(function BeautySection({ user }: BeautySectionProps) {
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="flex justify-center items-center min-h-[300px]">
             <div className="text-center">
-              <div className="w-12 h-12 border-4 border-[#5D5FEF] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
               <p className="text-gray-600">Loading beauty essentials...</p>
             </div>
           </div>
