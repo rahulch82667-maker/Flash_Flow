@@ -129,11 +129,9 @@ const WishlistCard = memo(({ item, onRemove }: WishlistCardProps) => {
               className="absolute top-2 right-2 p-1.5 bg-white rounded-full shadow-md hover:bg-red-50 transition-all z-10 disabled:opacity-50"
               aria-label="Remove from wishlist"
             >
-              {isLoading ? (
-                <Loader2 size={16} className="animate-spin text-red-500" />
-              ) : (
+              
                 <Heart size={16} className="fill-red-500 text-red-500" />
-              )}
+            
             </motion.button>
           </div>
 

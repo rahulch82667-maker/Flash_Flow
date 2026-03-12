@@ -460,20 +460,20 @@ const ProductCard = memo(
             </button>
           </div>
 
-          {/* Product Details */}
-          <div className="p-2 sm:p-2.5 flex flex-col flex-1">
+          {/* Product Details - Reduced spacing */}
+          <div className="p-1.5 sm:p-2 flex flex-col flex-1">
             <Link href={`/product/${product.id || product.id}`}>
-              <h3 className="text-xs sm:text-sm font-medium text-gray-900 line-clamp-2 min-h-[2rem] sm:min-h-[2.2rem] mb-1 hover:text-[#5D5FEF] transition-colors">
+              <h3 className="text-xs sm:text-sm font-bold text-gray-900 line-clamp-2 leading-tight mb-0.5 hover:text-[#5D5FEF] transition-colors">
                 {product.title || "Untitled Product"}
               </h3>
             </Link>
 
-            <p className="text-[10px] sm:text-xs text-gray-500 line-clamp-2 min-h-[1.8rem] sm:min-h-[2rem] mb-1.5">
+            <p className="text-[10px] sm:text-xs text-gray-500 line-clamp-2 leading-tight mb-1">
               {product.description || "No description available"}
             </p>
 
-            <div className="mb-1.5">
-              <span className="text-sm sm:text-base font-bold text-gray-900">
+            <div className="mb-1">
+              <span className="text-xs sm:text-sm font-bold text-gray-900">
                 ₹{(product.price || 0).toLocaleString()}
               </span>
             </div>
@@ -487,7 +487,7 @@ const ProductCard = memo(
                 >
                   <>
                     <Trash2 size={14} />
-                    <span>Remove from Cart</span>
+                    <span>Remove</span>
                   </>
                 </button>
               ) : (
@@ -498,7 +498,7 @@ const ProductCard = memo(
                 >
                   <>
                     <ShoppingBag size={14} />
-                    <span>Add to Cart</span>
+                    <span>Add</span>
                   </>
                 </button>
               )}
@@ -785,7 +785,7 @@ export default memo(function KidsCollection({ user }: KidsCollectionProps) {
   }
 
   return (
-    <section className="w-full py-8 sm:py-12 lg:py-16">
+    <section className="w-full pt-8 sm:pt-12 lg:pt-16 pb-10 sm:pb-20 lg:pb-32">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
         <div>
@@ -831,7 +831,7 @@ export default memo(function KidsCollection({ user }: KidsCollectionProps) {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.3 }}
-              className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5  gap-4 sm:gap-5"
+              className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 sm:gap-5"
             >
               {kidsProducts.map((product, index) => {
                 const productId = product?.id || (product as any)?._id;

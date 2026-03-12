@@ -194,116 +194,92 @@ const ProductCard = memo(
 
     return (
       <>
-        <motion.div
+<motion.div
           variants={cardVariants}
           initial="hidden"
           animate="visible"
-          className="group relative bg-white rounded-xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden h-full flex flex-col"
+          className="group relative bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden h-full flex flex-col border border-gray-100"
         >
-          {/* Product Image Container */}
+          {/* Compact Product Image */}
           <Link
             href={`/product/${product._id}`}
-            className="block relative aspect-[3/4] overflow-hidden bg-gray-100 flex-shrink-0"
+            className="block relative aspect-[4/5] overflow-hidden bg-gray-50 flex-shrink-0"
           >
             <Image
               src={product.image}
               alt={product.title}
               fill
-              className="object-cover transition-transform duration-700 group-hover:scale-110"
-              sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw"
+              className="object-cover transition-transform duration-500 group-hover:scale-105"
+              sizes="(max-width: 640px) 45vw, 20vw"
             />
 
-            {product.isNewArrival && (
-              <div className="absolute top-3 left-3 bg-green-500 text-white text-xs font-bold px-2 py-1 rounded-md z-10">
-                NEW
-              </div>
-            )}
-
-            {/* In Cart Badge */}
-            {isInCart && (
-              <div className="absolute top-3 left-3 bg-[#5D5FEF] text-white text-xs font-bold px-2 py-1 rounded-md z-10 flex items-center gap-1">
-                <CheckCircle size={12} />
-                In Cart
-              </div>
-            )}
+            {/* Badges Logic: Shows In Cart OR New (Priority to In Cart) */}
+            <div className="absolute top-2 left-2 z-10">
+              {isInCart ? (
+                <span className="bg-[#5D5FEF] text-white text-[10px] font-bold px-1.5 py-0.5 rounded shadow-sm flex items-center gap-1">
+                  <CheckCircle size={10} />
+                  IN CART
+                </span>
+              ) : product.isNewArrival && (
+                <span className="bg-green-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded shadow-sm">
+                  NEW
+                </span>
+              )}
+            </div>
 
             {/* Wishlist Button */}
-            <motion.button
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
+            <button
               onClick={handleWishlistClick}
               disabled={isLoading}
-              className={`absolute top-3 right-3 w-8 h-8 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center transition-all duration-300 z-20 ${
-                isWishlisted
-                  ? "opacity-100"
-                  : "opacity-0 group-hover:opacity-100"
-              } disabled:opacity-50 disabled:cursor-not-allowed`}
-              aria-label={
-                isWishlisted ? "Remove from wishlist" : "Add to wishlist"
-              }
+              className={`absolute top-2 right-2 w-7 h-7 bg-white/80 backdrop-blur-sm rounded-full flex items-center justify-center transition-all z-20 shadow-sm ${
+                isWishlisted ? "opacity-100" : "opacity-0 group-hover:opacity-100"
+              }`}
             >
               <Heart
-                size={18}
-                className={`transition-colors ${
-                  isWishlisted ? "fill-red-500 text-red-500" : "text-gray-700"
-                }`}
+                size={16}
+                className={isWishlisted ? "fill-red-500 text-red-500" : "text-gray-600"}
               />
-            </motion.button>
+            </button>
           </Link>
 
-          <div className="p-2 sm:p-3 md:p-4 flex flex-col flex-1">
+          {/* Product Details */}
+          <div className="p-3 flex flex-col flex-1">
             <Link href={`/product/${product._id}`}>
-              <h3 className="text-sm sm:text-base font-semibold text-gray-900 line-clamp-2 min-h-[2.5rem] sm:min-h-[3rem] mb-1 hover:text-[#5D5FEF] transition-colors">
+              <h3 className="text-xs sm:text-sm font-medium text-gray-800 line-clamp-1 mb-1 hover:text-[#5D5FEF] transition-colors">
                 {product.title}
               </h3>
             </Link>
-            <p className="text-xs sm:text-sm text-gray-600 line-clamp-2 min-h-[2rem] sm:min-h-[2.5rem] mb-2 sm:mb-3">
-              {product.description}
-            </p>
-
-            <div className="mb-2 sm:mb-3">
-              <span className="text-lg sm:text-xl font-bold text-gray-900">
+            
+            <div className="mb-2">
+              <span className="text-sm sm:text-base font-bold text-gray-900">
                 ₹{product.price.toLocaleString()}
               </span>
             </div>
 
-            {/* Cart Button */}
+            {/* Action Buttons */}
             <div className="mt-auto">
               {isInCart ? (
                 <button
                   onClick={handleRemoveFromCart}
                   disabled={localCartLoading || !user}
-                  className="w-full bg-[#1B2559] hover:bg-[#253275] text-white py-2 rounded-lg font-semibold text-xs sm:text-sm transition-all duration-300 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full bg-[#1B2559] hover:bg-[#151d45] text-white py-1.5 rounded-md font-medium text-[11px] sm:text-xs transition-colors flex items-center justify-center gap-1.5 disabled:opacity-50"
                 >
-                  <>
-                    <Trash2 size={14} />
-                    <span>Remove from Cart</span>
-                  </>
+                  <Trash2 size={14} />
+                  <span>Remove from Cart</span>
                 </button>
               ) : (
                 <button
                   onClick={handleAddToCart}
                   disabled={localCartLoading || !user}
-                  className="w-full bg-[#5D5FEF] hover:bg-[#4B4DC9] text-white py-2 rounded-lg font-semibold text-xs sm:text-sm transition-all duration-300 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full bg-[#5D5FEF] hover:bg-[#4B4DC9] text-white py-1.5 rounded-md font-medium text-[11px] sm:text-xs transition-colors flex items-center justify-center gap-1.5 disabled:opacity-50"
                 >
-                  <>
-                    <ShoppingBag size={14} />
-                    <span>Add to Cart</span>
-                  </>
+                  <ShoppingBag size={14} />
+                  <span>Add to Cart</span>
                 </button>
               )}
             </div>
           </div>
-
-          {product.isTrending && (
-            <div className="absolute -top-1 -left-1 w-16 h-16 overflow-hidden">
-              <div className="absolute top-0 left-0 transform -rotate-45 translate-x-[-30%] translate-y-[-30%] bg-orange-500 text-white text-[10px] font-bold py-1 w-20 text-center">
-                TRENDING
-              </div>
-            </div>
-          )}
         </motion.div>
-
         {/* Toast Notification */}
         <AnimatePresence>
           {showToast && (

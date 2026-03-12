@@ -202,12 +202,12 @@ const ProductCard = memo(
           variants={cardVariants}
           initial="hidden"
           animate="visible"
-          className="group relative bg-white rounded-xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden h-full flex flex-col"
+          className="group relative bg-white rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden h-full flex flex-col max-w-[240px] mx-auto w-full"
         >
-          {/* Product Image Container */}
+          {/* Product Image Container - Reduced aspect ratio slightly */}
           <Link
             href={`/product/${product._id}`}
-            className="block relative aspect-[3/4] overflow-hidden bg-gray-100 flex-shrink-0"
+            className="block relative aspect-[4/5] overflow-hidden bg-gray-100 flex-shrink-0"
           >
             <Image
               src={product.image}
@@ -218,36 +218,31 @@ const ProductCard = memo(
             />
 
             {product.isNewArrival && (
-              <div className="absolute top-3 left-3 bg-green-500 text-white text-xs font-bold px-2 py-1 rounded-md z-10">
+              <div className="absolute top-2 left-2 bg-green-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-md z-10">
                 NEW
               </div>
             )}
 
-            {/* In Cart Badge */}
             {isInCart && (
-              <div className="absolute top-3 left-3 bg-[#5D5FEF] text-white text-xs font-bold px-2 py-1 rounded-md z-10 flex items-center gap-1">
-                <CheckCircle size={12} />
+              <div className="absolute top-2 left-2 bg-[#5D5FEF] text-white text-[10px] font-bold px-1.5 py-0.5 rounded-md z-10 flex items-center gap-1">
+                <CheckCircle size={10} />
                 In Cart
               </div>
             )}
 
-            {/* Wishlist Button */}
             <motion.button
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
               onClick={handleWishlistClick}
               disabled={isLoading}
-              className={`absolute top-3 right-3 w-8 h-8 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center transition-all duration-300 z-20 ${
+              className={`absolute top-2 right-2 w-7 h-7 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center transition-all duration-300 z-20 ${
                 isWishlisted
                   ? "opacity-100"
                   : "opacity-0 group-hover:opacity-100"
               } disabled:opacity-50 disabled:cursor-not-allowed`}
-              aria-label={
-                isWishlisted ? "Remove from wishlist" : "Add to wishlist"
-              }
             >
               <Heart
-                size={18}
+                size={16}
                 className={`transition-colors ${
                   isWishlisted ? "fill-red-500 text-red-500" : "text-gray-700"
                 }`}
@@ -255,64 +250,58 @@ const ProductCard = memo(
             </motion.button>
           </Link>
 
-          {/* Product Details */}
-          <div className="p-2 sm:p-3 md:p-4 flex flex-col flex-1">
+          {/* Product Details - Tighter padding and margins */}
+          <div className="p-2.5 flex flex-col flex-1">
             <Link href={`/product/${product._id}`}>
-              <h3 className="text-sm sm:text-base font-semibold text-gray-900 line-clamp-2 min-h-[2.5rem] sm:min-h-[3rem] mb-1 hover:text-[#5D5FEF] transition-colors">
+              <h3 className="text-xs sm:text-sm font-semibold text-gray-900 line-clamp-1 mb-0.5 hover:text-[#5D5FEF] transition-colors">
                 {product.title}
               </h3>
             </Link>
 
             <Link href={`/product/${product._id}`}>
-              <p className="text-xs sm:text-sm text-gray-600 line-clamp-2 min-h-[2rem] sm:min-h-[2.5rem] mb-2 sm:mb-3">
+              <p className="text-[10px] sm:text-xs text-gray-500 line-clamp-1 mb-1.5">
                 {product.description}
               </p>
             </Link>
 
-            <div className="mb-2 sm:mb-3">
-              <span className="text-lg sm:text-xl font-bold text-gray-900">
+            <div className="mb-2">
+              <span className="text-sm sm:text-base font-bold text-gray-900">
                 ₹{product.price.toLocaleString()}
               </span>
             </div>
 
-            {/* Cart Button */}
+            {/* Cart Button - Compact height */}
             <div className="mt-auto">
               {isInCart ? (
                 <button
                   onClick={handleRemoveFromCart}
                   disabled={localCartLoading || !user}
-                  className="w-full bg-[#1B2559] hover:bg-[#253275] text-white py-2 rounded-lg font-semibold text-xs sm:text-sm transition-all duration-300 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full bg-[#1B2559] hover:bg-[#253275] text-white py-1.5 rounded-md font-semibold text-[10px] sm:text-xs transition-all duration-300 flex items-center justify-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  <>
-                    <Trash2 size={14} />
-                    <span>Remove from Cart</span>
-                  </>
+                  <Trash2 size={14} />
+                  <span>Remove from Cart</span>
                 </button>
               ) : (
                 <button
                   onClick={handleAddToCart}
                   disabled={localCartLoading || !user}
-                  className="w-full bg-[#5D5FEF] hover:bg-[#4B4DC9] text-white py-2 rounded-lg font-semibold text-xs sm:text-sm transition-all duration-300 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full bg-[#5D5FEF] hover:bg-[#4B4DC9] text-white py-1.5 rounded-md font-semibold text-[10px] sm:text-xs transition-all duration-300 flex items-center justify-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  <>
-                    <ShoppingBag size={14} />
-                    <span>Add to Cart</span>
-                  </>
+                  <ShoppingBag size={14} />
+                  <span>Add to Cart</span>
                 </button>
               )}
             </div>
           </div>
 
-          {/* Trending Badge */}
           {product.isTrending && (
-            <div className="absolute -top-1 -left-1 w-16 h-16 overflow-hidden">
-              <div className="absolute top-0 left-0 transform -rotate-45 translate-x-[-30%] translate-y-[-30%] bg-orange-500 text-white text-[10px] font-bold py-1 w-20 text-center">
-                TRENDING
+            <div className="absolute -top-1 -left-1 w-12 h-12 overflow-hidden">
+              <div className="absolute top-0 left-0 transform -rotate-45 translate-x-[-30%] translate-y-[-30%] bg-orange-500 text-white text-[8px] font-bold py-0.5 w-16 text-center">
+                HOT
               </div>
             </div>
           )}
         </motion.div>
-
         {/* Toast Notification  */}
         <AnimatePresence>
           {showToast && (

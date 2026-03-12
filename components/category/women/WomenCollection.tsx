@@ -414,7 +414,7 @@ const ProductCard = memo(
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -20 }}
           transition={{ duration: 0.3 }}
-          className="group relative bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden h-full flex flex-col"
+          className="group relative bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden flex flex-col"
         >
           <Link href={`/product/${product.id || product.id}`}>
             <div className="relative aspect-[3/4] overflow-hidden bg-gray-100 flex-shrink-0">
@@ -463,19 +463,19 @@ const ProductCard = memo(
           </Link>
 
           {/* Product Details */}
-          <div className="p-2 sm:p-2.5 flex flex-col flex-1">
+          <div className="p-1.5 sm:p-2 flex flex-col flex-1">
             <Link href={`/product/${product.id || product.id}`}>
-              <h3 className="text-xs sm:text-sm font-medium text-gray-900 line-clamp-2 min-h-[2rem] sm:min-h-[2.2rem] mb-1 hover:text-[#5D5FEF] transition-colors">
+              <h3 className="text-xs sm:text-sm font-bold text-gray-900 line-clamp-2 leading-tight mb-0.5 hover:text-[#5D5FEF] transition-colors">
                 {product.title || "Untitled Product"}
               </h3>
             </Link>
 
-            <p className="text-[10px] sm:text-xs text-gray-500 line-clamp-2 min-h-[1.8rem] sm:min-h-[2rem] mb-1.5">
+            <p className="text-[10px] sm:text-xs text-gray-500 line-clamp-2 leading-tight mb-1">
               {product.description || "No description available"}
             </p>
 
-            <div className="mb-1.5">
-              <span className="text-sm sm:text-base font-bold text-gray-900">
+            <div className="mb-1">
+              <span className="text-xs sm:text-sm font-bold text-gray-900">
                 ₹{(product.price || 0).toLocaleString()}
               </span>
             </div>

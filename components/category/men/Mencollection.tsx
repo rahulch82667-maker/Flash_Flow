@@ -467,19 +467,19 @@ const ProductCard = memo(
             </div>
           </Link>
 
-          <div className="p-2 sm:p-2.5 flex flex-col flex-1">
+          <div className="p-1.5 sm:p-2 flex flex-col flex-1">
             <Link href={`/product/${product.id}`}>
-              <h3 className="text-xs sm:text-sm font-medium text-gray-900 line-clamp-2 min-h-[2rem] mb-1 hover:text-[#5D5FEF] transition-colors">
+              <h3 className="text-xs sm:text-sm font-bold text-gray-900 line-clamp-2 leading-tight mb-0.5 hover:text-[#5D5FEF] transition-colors">
                 {product.title || "Untitled Product"}
               </h3>
             </Link>
 
-            <p className="text-[10px] sm:text-xs text-gray-500 line-clamp-2 min-h-[1.8rem] mb-1.5">
+            <p className="text-[10px] sm:text-xs text-gray-500 line-clamp-2 leading-tight mb-1">
               {product.description || "No description available"}
             </p>
 
-            <div className="mb-1.5">
-              <span className="text-sm sm:text-base font-bold text-gray-900">
+            <div className="mb-1">
+              <span className="text-xs sm:text-sm font-bold text-gray-900">
                 ₹{(product.price || 0).toLocaleString()}
               </span>
             </div>
