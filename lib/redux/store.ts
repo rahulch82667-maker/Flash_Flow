@@ -19,6 +19,7 @@ import adminCartReducer from './features/adminCart/adminCartSlice';
 import orderReducer from './features/order/orderSlice';
 import adminOrdersReducer from './features/adminOrders/adminOrdersSlice'; 
 import adminPaymentsReducer from './features/adminPayments/adminPaymentsSlice'; 
+import categoryFilterReducer from './features/categoryFilter/categoryFilterSlice';
 
 export const store = configureStore({
   reducer: {
@@ -42,6 +43,7 @@ export const store = configureStore({
     order: orderReducer,
     adminOrders: adminOrdersReducer, 
     adminPayments: adminPaymentsReducer,
+    categoryFilter: categoryFilterReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

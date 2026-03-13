@@ -12,6 +12,7 @@ import MenSection from "@/components/home/MenSection";
 import WomenSection from "@/components/home/WomenSection";
 import BeautySection from "@/components/home/BeautySection";
 import Footer from "@/components/Footer";
+import CategoriesSection from "@/components/home/CategoriesSection";
 
 export default function Home() {
   const router = useRouter();
@@ -60,16 +61,6 @@ export default function Home() {
     router.replace("/");
   };
 
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-16 h-16 border-4 border-[#5D5FEF] border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-          <p className="text-gray-600">Catching the flow...</p>
-        </div>
-      </div>
-    );
-  }
 
   if (!user) {
     return null;
@@ -86,6 +77,7 @@ export default function Home() {
       <main className="pt-20 sm:pt-24">
         <HomeBanner />
         <CategorySlider />
+        <CategoriesSection />
         <MenSection user={user} />
         <WomenSection user={user} />
         <BeautySection user={user}/>

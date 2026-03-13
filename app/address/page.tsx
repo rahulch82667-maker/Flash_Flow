@@ -149,19 +149,6 @@ export default function AddressPage() {
     setDeleteModal({ show: false, addressId: null });
   };
 
-  if (pageLoading) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <Loader2
-            size={48}
-            className="text-[#5D5FEF] animate-spin mx-auto mb-4"
-          />
-          <p className="text-gray-600">Loading your address...</p>
-        </div>
-      </div>
-    );
-  }
 
   if (!user) {
     return null;

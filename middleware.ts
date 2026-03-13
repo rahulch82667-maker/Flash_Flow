@@ -12,7 +12,8 @@ export function middleware(request: NextRequest) {
   const isProtectedPage =
     pathname.startsWith("/home") || pathname.startsWith("/category/men") || pathname.startsWith("/category/women") ||
    pathname.startsWith("/category/kids") || pathname.startsWith("/wishlist") || pathname.startsWith("/category/beauty") || pathname.startsWith("/category/home") || pathname.startsWith("/admin")
-   || pathname.startsWith("/product") || pathname.startsWith("/address") || pathname.startsWith("/cart") || pathname.startsWith("/orders");
+   || pathname.startsWith("/product") || pathname.startsWith("/address") || pathname.startsWith("/cart") || pathname.startsWith("/orders")
+   || pathname.startsWith("/shop");
 
   if (!token && isProtectedPage) {
     return NextResponse.redirect(new URL("/", request.url));
@@ -35,6 +36,7 @@ export const config = {
     "/cart/:path*",
     "/orders/:path*",
     "/wishlist/:path*",
+    "/shop/:path*",
     "/category/men/:path*",
     "/category/women/:path*",
     "/category/kids/:path*",
