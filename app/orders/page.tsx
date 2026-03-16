@@ -222,7 +222,7 @@ export default function OrdersPage() {
     <div className="flex flex-col min-h-screen bg-gray-50">
       <Navbar user={user} onProfileClick={() => setShowProfile(true)} />
 
-      <main className="flex-grow pt-20 sm:pt-24 pb-24 lg:pb-28">
+      <main className="flex-grow pt-20 sm:pt-24 pb-24 lg:pb-28 mt-4">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Header */}
           <div className="flex items-center gap-2 mb-6">

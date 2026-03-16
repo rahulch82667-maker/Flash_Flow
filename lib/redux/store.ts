@@ -20,6 +20,8 @@ import orderReducer from './features/order/orderSlice';
 import adminOrdersReducer from './features/adminOrders/adminOrdersSlice'; 
 import adminPaymentsReducer from './features/adminPayments/adminPaymentsSlice'; 
 import categoryFilterReducer from './features/categoryFilter/categoryFilterSlice';
+import chatReducer from './features/chat/chatSlice';
+
 
 export const store = configureStore({
   reducer: {
@@ -44,6 +46,7 @@ export const store = configureStore({
     adminOrders: adminOrdersReducer, 
     adminPayments: adminPaymentsReducer,
     categoryFilter: categoryFilterReducer,
+    chat: chatReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

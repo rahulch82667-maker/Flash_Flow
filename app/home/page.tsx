@@ -13,6 +13,8 @@ import WomenSection from "@/components/home/WomenSection";
 import BeautySection from "@/components/home/BeautySection";
 import Footer from "@/components/Footer";
 import CategoriesSection from "@/components/home/CategoriesSection";
+import ChatWidget from "@/components/chat/ChatWidget";
+import ChatWindow from "@/components/chat/ChatWindow";
 
 export default function Home() {
   const router = useRouter();
@@ -83,6 +85,10 @@ export default function Home() {
         <BeautySection user={user}/>
         <Footer />
       </main>
+
+      {/* chat components */}
+      <ChatWidget />
+      <ChatWindow user={user} />
 
       {/* Profile Modal */}
       {showProfile && (
