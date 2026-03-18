@@ -16,7 +16,7 @@ export default function SuggestedMessages({ onSelectMessage, messages }: Suggest
       animate={{ opacity: 1, y: 0 }}
       className="px-2 sm:px-4 py-2 sm:py-3 border-t border-gray-100 bg-white"
     >
-      <div className="flex flex-wrap gap-1.5 sm:gap-2 max-h-24 sm:max-h-32 overflow-y-auto">
+      <div className="flex flex-wrap gap-1.5 sm:gap-2 max-h-24 sm:max-h-32">
         {messages.map((message, index) => (
           <motion.button
             key={index}
