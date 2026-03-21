@@ -5,7 +5,7 @@ let socket: Socket | null = null;
 export const initializeSocket = (userId?: string): Socket => {
   if (!socket) {
     const socketUrl = process.env.NODE_ENV === 'production'
-      ? 'https://flash-flow-socket-server.onrender.com'
+      ? 'https://flash-flow-socket-server-03sr.onrender.com'
       : 'http://localhost:3001';
 
     console.log(' Connecting to socket:', socketUrl);
