@@ -175,7 +175,7 @@ export default function OrdersPage() {
         setCancelModal(false);
         showToast("Order cancelled successfully", "success");
         dispatch(fetchUserOrders({ page: 1, limit: 10 }));
-        setSelectedOrder({ ...selectedOrder, orderStatus: "cancelled" });
+        setSelectedOrder({ ...selectedOrder, orderStatus: "cancelled", refundStatus: "pending" });
       } else {
         showToast("Failed to cancel order", "error");
       }
@@ -486,10 +486,21 @@ export default function OrdersPage() {
                       {selectedOrder.orderStatus === "cancelled" && (
                         <div className="mb-8 p-4 bg-red-50 rounded-xl flex items-center gap-3">
                           <XCircle size={20} className="text-red-500" />
-                          <div>
+                          <div className="flex-1">
                             <p className="font-medium text-red-600">Order Cancelled</p>
                             <p className="text-sm text-red-500">This order has been cancelled</p>
                           </div>
+                          {selectedOrder.refundStatus && selectedOrder.refundStatus !== "none" && (
+                            <div className="text-right">
+                              <span className={`text-xs px-3 py-1.5 rounded-full font-medium ${
+                                selectedOrder.refundStatus === "completed" ? "bg-green-100 text-green-700" :
+                                selectedOrder.refundStatus === "failed" ? "bg-red-100 text-red-700" :
+                                "bg-amber-100 text-amber-700"
+                              }`}>
+                                Refund {selectedOrder.refundStatus === "completed" ? "Completed" : selectedOrder.refundStatus === "pending" ? "Initiated" : "Failed"}
+                              </span>
+                            </div>
+                          )}
                         </div>
                       )}
 

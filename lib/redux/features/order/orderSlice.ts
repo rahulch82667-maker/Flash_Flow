@@ -30,6 +30,7 @@ export interface Order {
   shippingAddress: ShippingAddress;
   paymentMethod: string;
   paymentStatus: "pending" | "completed" | "failed" | "refunded";
+  refundStatus: "none" | "pending" | "completed" | "failed";
   orderStatus:
     | "pending"
     | "confirmed"

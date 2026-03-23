@@ -521,6 +521,10 @@ async function renderStep(state: any, userId: string | null) {
  const productNames = order.items.map((i: any) => i.title).join(', ');
  responseText += `**Order Details:**\n\n**ID:** #${order.orderId}\n**Products:** ${productNames}\n**Status:** ${order.orderStatus.toUpperCase()}\n**Total:** ₹${order.totalAmount}\n**Placed on:** ${new Date(order.createdAt).toLocaleDateString()}`;
  
+ if (order.orderStatus === 'cancelled' && order.refundStatus && order.refundStatus !== 'none') {
+ responseText += `\n**Refund Status:** ${order.refundStatus.toUpperCase()}`;
+ }
+
  const isEligible = ['pending', 'processing', 'confirmed'].includes(order.orderStatus.toLowerCase());
  
  buttons.push(createButton('Track Order', 'TRACK_ORDER', {}, 'Truck'));

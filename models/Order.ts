@@ -29,6 +29,7 @@ export interface IOrder extends Document {
   shippingAddress: IShippingAddress;
   paymentMethod: string;
   paymentStatus: "pending" | "completed" | "failed" | "refunded";
+  refundStatus: "none" | "pending" | "completed" | "failed";
   orderStatus: "pending" | "confirmed" | "processing" | "shipped" | "delivered" | "cancelled";
   subtotal: number;
   deliveryCharge: number;
@@ -116,6 +117,11 @@ const orderSchema = new Schema<IOrder>(
       required: true,
       enum: ["pending", "completed", "failed", "refunded"],
       default: "pending",
+    },
+    refundStatus: {
+      type: String,
+      enum: ["none", "pending", "completed", "failed"],
+      default: "none",
     },
     orderStatus: {
       type: String,

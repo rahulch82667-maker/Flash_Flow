@@ -5,6 +5,7 @@ import { connectDB } from "@/lib/db";
 import Order from "@/models/Order";
 import User from "@/models/User";
 import mongoose from "mongoose";
+import { stripe } from "@/lib/stripe";
 
 export async function PUT(
   req: NextRequest,
@@ -65,9 +66,42 @@ export async function PUT(
       );
     }
 
+    if (order.paymentStatus !== "completed") {
+      return NextResponse.json(
+        { error: "Order is not paid, cannot process refund" },
+        { status: 400 }
+      );
+    }
+
+    if (order.refundStatus === "pending" || order.refundStatus === "completed") {
+      return NextResponse.json(
+        { error: "Refund is already processed or pending" },
+        { status: 400 }
+      );
+    }
+
+    if (!order.stripePaymentIntentId) {
+      return NextResponse.json(
+        { error: "No Stripe payment intent found for this order" },
+        { status: 400 }
+      );
+    }
+
+    try {
+      await stripe.refunds.create({
+        payment_intent: order.stripePaymentIntentId,
+      });
+    } catch (stripeError: any) {
+      console.error("Stripe refund error:", stripeError);
+      return NextResponse.json(
+        { error: stripeError.message || "Failed to initiate refund with Stripe" },
+        { status: 500 }
+      );
+    }
+
     // Update order status
     order.orderStatus = "cancelled";
-    order.paymentStatus = "refunded";
+    order.refundStatus = "pending";
     await order.save();
 
     return NextResponse.json({
