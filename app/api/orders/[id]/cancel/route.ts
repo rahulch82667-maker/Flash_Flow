@@ -6,6 +6,7 @@ import Order from "@/models/Order";
 import User from "@/models/User";
 import mongoose from "mongoose";
 import { stripe } from "@/lib/stripe";
+import { sendRefundEmail } from "@/lib/utils/email";
 
 export async function PUT(
   req: NextRequest,
@@ -103,6 +104,16 @@ export async function PUT(
     order.orderStatus = "cancelled";
     order.refundStatus = "pending";
     await order.save();
+
+    // Send Refund Initiated Email
+    try {
+      if (user?.email) {
+        // We pass the total amount since the refund should cover it, or we leave amount null
+        await sendRefundEmail(user.email, order.orderId, "initiated", order.totalAmount);
+      }
+    } catch (emailError) {
+      console.error("Failed to send refund initiation email:", emailError);
+    }
 
     return NextResponse.json({
       success: true,
