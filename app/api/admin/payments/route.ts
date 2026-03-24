@@ -60,7 +60,7 @@ export async function GET(req: NextRequest) {
 
     // Get orders and users for each payment
     const orderIds = [...new Set(payments.map(p => p.orderId.toString()))];
-    const orders = await Order.find({ _id: { $in: orderIds } }).select('orderId').lean();
+    const orders = await Order.find({ _id: { $in: orderIds } }).select('orderId refundStatus orderStatus').lean();
     const orderMap = new Map(orders.map(o => [o._id.toString(), o]));
 
     const userIds = [...new Set(payments.map(p => p.userId.toString()))];
@@ -73,6 +73,8 @@ export async function GET(req: NextRequest) {
       paymentId: payment.paymentId,
       orderId: payment.orderId.toString(),
       orderNumber: orderMap.get(payment.orderId.toString())?.orderId || 'Unknown',
+      orderStatus: orderMap.get(payment.orderId.toString())?.orderStatus || 'Unknown',
+      refundStatus: orderMap.get(payment.orderId.toString())?.refundStatus || 'none',
       userId: payment.userId.toString(),
       userName: userMap.get(payment.userId.toString())?.name || 'Unknown User',
       userEmail: userMap.get(payment.userId.toString())?.email || 'Unknown Email',

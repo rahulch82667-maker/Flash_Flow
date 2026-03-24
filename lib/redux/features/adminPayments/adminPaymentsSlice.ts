@@ -5,6 +5,8 @@ export interface AdminPayment {
   paymentId: string;
   orderId: string;
   orderNumber: string;
+  orderStatus?: string;
+  refundStatus?: string;
   userId: string;
   userName: string;
   userEmail: string;

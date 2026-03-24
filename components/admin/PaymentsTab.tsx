@@ -322,6 +322,18 @@ export default function PaymentsTab() {
                             {payment.status}
                           </span>
                         </div>
+                        {payment.orderStatus === 'cancelled' && payment.refundStatus && payment.refundStatus !== 'none' && (
+                          <div>
+                            <p className="text-xs text-gray-500">Refund</p>
+                            <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                              payment.refundStatus === 'completed' ? "bg-green-100 text-green-600 border-green-200" :
+                              payment.refundStatus === 'failed' ? "bg-red-100 text-red-600 border-red-200" :
+                              "bg-yellow-100 text-yellow-600 border-yellow-200"
+                            }`}>
+                              {payment.refundStatus}
+                            </span>
+                          </div>
+                        )}
                         <button
                           onClick={() => handleViewPayment(payment._id)}
                           className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
@@ -471,7 +483,7 @@ export default function PaymentsTab() {
                 </div>
 
                 {/* Status and Amount */}
-                <div className="grid grid-cols-2 gap-3 mb-6">
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-6">
                   <div className="bg-gray-50 rounded-xl p-4">
                     <p className="text-xs text-gray-500 mb-2">Status</p>
                     <div className={`inline-flex items-center gap-2 px-3 py-2 rounded-full text-sm font-medium ${paymentStatusColors[selectedPayment.status]}`}>
@@ -487,6 +499,19 @@ export default function PaymentsTab() {
                     <p className="text-2xl font-bold text-[#5D5FEF]">{formatCurrency(selectedPayment.amount)}</p>
                     <p className="text-xs text-gray-500 mt-1">{selectedPayment.currency.toUpperCase()}</p>
                   </div>
+                  {selectedPayment.orderStatus === 'cancelled' && selectedPayment.refundStatus && selectedPayment.refundStatus !== 'none' && (
+                    <div className="bg-gray-50 rounded-xl p-4">
+                      <p className="text-xs text-gray-500 mb-2">Refund Status</p>
+                      <span className={`inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-sm font-medium ${
+                        selectedPayment.refundStatus === 'completed' ? "bg-green-100 text-green-600" :
+                        selectedPayment.refundStatus === 'failed' ? "bg-red-100 text-red-600" :
+                        "bg-yellow-100 text-yellow-600"
+                      }`}>
+                        <AlertCircle size={14} />
+                        {selectedPayment.refundStatus}
+                      </span>
+                    </div>
+                  )}
                 </div>
 
                 {/* Payment Method */}

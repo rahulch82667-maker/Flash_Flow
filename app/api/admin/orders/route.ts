@@ -77,6 +77,7 @@ export async function GET(req: NextRequest) {
       paymentMethod: order.paymentMethod,
       paymentStatus: order.paymentStatus,
       orderStatus: order.orderStatus,
+      refundStatus: order.refundStatus,
       subtotal: order.subtotal,
       deliveryCharge: order.deliveryCharge,
       totalAmount: order.totalAmount,

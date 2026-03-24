@@ -33,6 +33,7 @@ export interface AdminOrder {
   paymentMethod: string;
   paymentStatus: 'pending' | 'completed' | 'failed' | 'refunded';
   orderStatus: 'pending' | 'confirmed' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
+  refundStatus?: 'none' | 'pending' | 'completed' | 'failed' | string;
   subtotal: number;
   deliveryCharge: number;
   totalAmount: number;

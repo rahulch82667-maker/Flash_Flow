@@ -388,6 +388,18 @@ export default function OrdersTab() {
                       {order.paymentStatus}
                     </span>
                   </div>
+                  {order.orderStatus === 'cancelled' && order.refundStatus && order.refundStatus !== 'none' && (
+                    <div>
+                      <p className="text-xs text-gray-500">Refund</p>
+                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                        order.refundStatus === 'completed' ? "bg-green-100 text-green-600 border-green-200" :
+                        order.refundStatus === 'failed' ? "bg-red-100 text-red-600 border-red-200" :
+                        "bg-yellow-100 text-yellow-600 border-yellow-200"
+                      }`}>
+                        {order.refundStatus}
+                      </span>
+                    </div>
+                  )}
                   <div className="flex items-center gap-2">
                     <button
                       onClick={() => handleViewOrder(order._id)}
@@ -552,7 +564,7 @@ export default function OrdersTab() {
                 </div>
 
                 {/* Status Cards */}
-                <div className="grid grid-cols-2 gap-3 mb-6">
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-6">
                   <div className="bg-gray-50 rounded-xl p-3">
                     <p className="text-xs text-gray-500 mb-1">Order Status</p>
                     <span className={`inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-sm font-medium ${orderStatusColors[selectedOrder.orderStatus] || "bg-gray-100 text-gray-600"}`}>
@@ -567,6 +579,19 @@ export default function OrdersTab() {
                       {selectedOrder.paymentStatus}
                     </span>
                   </div>
+                  {selectedOrder.orderStatus === 'cancelled' && selectedOrder.refundStatus && selectedOrder.refundStatus !== 'none' && (
+                    <div className="bg-gray-50 rounded-xl p-3">
+                      <p className="text-xs text-gray-500 mb-1">Refund Status</p>
+                      <span className={`inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-sm font-medium ${
+                        selectedOrder.refundStatus === 'completed' ? "bg-green-100 text-green-600" :
+                        selectedOrder.refundStatus === 'failed' ? "bg-red-100 text-red-600" :
+                        "bg-yellow-100 text-yellow-600"
+                      }`}>
+                        <AlertCircle size={14} />
+                        {selectedOrder.refundStatus}
+                      </span>
+                    </div>
+                  )}
                 </div>
 
                 {/* Customer Info */}
