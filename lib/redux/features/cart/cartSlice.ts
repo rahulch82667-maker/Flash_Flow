@@ -48,6 +48,7 @@ interface CartState {
   finalTotal: number;
   suggestedPromos: SuggestedPromo[];
   loadingPromos: boolean;
+  checkoutAddress: any | null;
 }
 
 const initialState: CartState = {
@@ -66,6 +67,7 @@ const initialState: CartState = {
   finalTotal: 0,
   suggestedPromos: [],
   loadingPromos: false,
+  checkoutAddress: null,
 };
 
 // Fetch cart items
@@ -468,6 +470,20 @@ const cartSlice = createSlice({
     clearError: (state) => {
       state.error = null;
     },
+    setCheckoutAddress: (state, action: PayloadAction<any | null>) => {
+      state.checkoutAddress = action.payload;
+    },
+    setPromoData: (state, action: PayloadAction<{ promoCode: string | null; promoDiscount: number }>) => {
+      state.promoCode = action.payload.promoCode;
+      state.promoDiscount = action.payload.promoDiscount;
+      const { subtotal, discountAmount, deliveryCharge, total, finalTotal, appliedDiscounts } = calculateTotals(state.items, state.selectedItems, state.promoDiscount);
+      state.subtotal = subtotal;
+      state.discountAmount = discountAmount;
+      state.deliveryCharge = deliveryCharge;
+      state.total = total;
+      state.finalTotal = finalTotal;
+      state.appliedDiscounts = appliedDiscounts;
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -640,6 +656,10 @@ const cartSlice = createSlice({
         state.appliedDiscounts = [];
         state.promoCode = null;
         state.promoDiscount = 0;
+        if (typeof window !== 'undefined') {
+          sessionStorage.removeItem("promoCode");
+          sessionStorage.removeItem("promoDiscount");
+        }
       })
 
       // Apply promo code
@@ -651,6 +671,10 @@ const cartSlice = createSlice({
         state.operationLoading = false;
         state.promoCode = action.payload.promoCode;
         state.promoDiscount = action.payload.discountAmount;
+        if (typeof window !== 'undefined') {
+          sessionStorage.setItem("promoCode", action.payload.promoCode);
+          sessionStorage.setItem("promoDiscount", action.payload.discountAmount.toString());
+        }
         const { finalTotal } = calculateTotals(state.items, state.selectedItems, state.promoDiscount);
         state.finalTotal = finalTotal;
       })
@@ -663,6 +687,10 @@ const cartSlice = createSlice({
       .addCase(removePromoCode.fulfilled, (state) => {
         state.promoCode = null;
         state.promoDiscount = 0;
+        if (typeof window !== 'undefined') {
+          sessionStorage.removeItem("promoCode");
+          sessionStorage.removeItem("promoDiscount");
+        }
         const { finalTotal } = calculateTotals(state.items, state.selectedItems, 0);
         state.finalTotal = finalTotal;
       })
@@ -685,5 +713,5 @@ const cartSlice = createSlice({
   },
 });
 
-export const { toggleSelectLocal, selectAllLocal, clearError } = cartSlice.actions;
+export const { toggleSelectLocal, selectAllLocal, clearError, setCheckoutAddress, setPromoData } = cartSlice.actions;
 export default cartSlice.reducer;

@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import User from "@/models/User";
 import { adminAuth } from "@/lib/firebase-admin";
 import { connectDB } from "@/lib/db";
+import CartLayoutWrapper from "@/components/cart/CartLayoutWrapper";
 
 export default async function AddressLayout({
   children,
@@ -36,5 +37,5 @@ export default async function AddressLayout({
     redirect("/admin");
   }
 
-  return <>{children}</>;
+  return <CartLayoutWrapper>{children}</CartLayoutWrapper>;
 }
