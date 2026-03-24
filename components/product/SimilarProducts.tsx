@@ -350,7 +350,7 @@ export default function SimilarProducts({
                         <button
                           onClick={(e) => handleWishlist(product, e)}
                           disabled={isWishlistLoading || wishlistLoading}
-                          className={`absolute top-2 right-2 p-1.5 bg-white rounded-full shadow-md hover:bg-red-50 transition-all opacity-0 group-hover:opacity-100 disabled:opacity-50`}
+                          className={`absolute cursor-pointer top-2 right-2 p-1.5 bg-white rounded-full shadow-md hover:bg-red-50 transition-all opacity-0 group-hover:opacity-100 disabled:opacity-50`}
                           aria-label={
                             isWishlisted
                               ? "Remove from wishlist"
@@ -390,7 +390,7 @@ export default function SimilarProducts({
                         <button
                           onClick={(e) => handleAddToCart(product, e)}
                           disabled={isCartLoading || cartLoading}
-                          className="px-3 py-1.5 bg-indigo-50 text-indigo-700 border border-indigo-100 rounded-lg hover:bg-indigo-100 transition-all duration-300 text-xs font-semibold flex items-center gap-1 disabled:opacity-50 disabled:cursor-not-allowed"
+                          className="px-3 cursor-pointer py-1.5 bg-indigo-50 text-indigo-700 border border-indigo-100 rounded-lg hover:bg-indigo-100 transition-all duration-300 text-xs font-semibold flex items-center gap-1 disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                           <Trash2 size={14} />
                           <span>Remove</span>
@@ -399,7 +399,7 @@ export default function SimilarProducts({
                         <button
                           onClick={(e) => handleAddToCart(product, e)}
                           disabled={isCartLoading || cartLoading}
-                          className="px-3 py-1.5 bg-[#5D5FEF] text-white rounded-lg hover:bg-[#4B4DC9] transition-colors text-xs font-medium flex items-center gap-1 disabled:opacity-50"
+                          className="px-3 cursor-pointer py-1.5 bg-[#5D5FEF] text-white rounded-lg hover:bg-[#4B4DC9] transition-colors text-xs font-medium flex items-center gap-1 disabled:opacity-50"
                         >
                           <>
                             <ShoppingBag size={14} />

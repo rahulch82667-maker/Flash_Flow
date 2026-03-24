@@ -239,7 +239,7 @@ const ProductCard = memo(
                 isWishlisted
                   ? "opacity-100"
                   : "opacity-0 group-hover:opacity-100"
-              } disabled:opacity-50 disabled:cursor-not-allowed`}
+              } disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer`}
             >
               <Heart
                 size={16}
@@ -276,7 +276,7 @@ const ProductCard = memo(
                 <button
                   onClick={handleRemoveFromCart}
                   disabled={localCartLoading || !user}
-                  className="w-full bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-100 py-1.5 rounded-md font-semibold text-[10px] sm:text-xs transition-all duration-300 flex items-center justify-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full cursor-pointer bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-100 py-1.5 rounded-md font-semibold text-[10px] sm:text-xs transition-all duration-300 flex items-center justify-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <Trash2 size={14} />
                   <span>Remove from Cart</span>
@@ -285,7 +285,7 @@ const ProductCard = memo(
                 <button
                   onClick={handleAddToCart}
                   disabled={localCartLoading || !user}
-                  className="w-full bg-[#5D5FEF] hover:bg-[#4B4DC9] text-white border border-transparent py-1.5 rounded-md font-semibold text-[10px] sm:text-xs transition-all duration-300 flex items-center justify-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full cursor-pointer bg-[#5D5FEF] hover:bg-[#4B4DC9] text-white border border-transparent py-1.5 rounded-md font-semibold text-[10px] sm:text-xs transition-all duration-300 flex items-center justify-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <ShoppingBag size={14} />
                   <span>Add to Cart</span>

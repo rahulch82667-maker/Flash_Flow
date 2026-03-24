@@ -126,7 +126,7 @@ const WishlistCard = memo(({ item, onRemove }: WishlistCardProps) => {
               whileTap={{ scale: 0.9 }}
               onClick={handleRemove}
               disabled={isLoading}
-              className="absolute top-2 right-2 p-1.5 bg-white rounded-full shadow-md hover:bg-red-50 transition-all z-10 disabled:opacity-50"
+              className="absolute cursor-pointer top-2 right-2 p-1.5 bg-white rounded-full shadow-md hover:bg-red-50 transition-all z-10 disabled:opacity-50"
               aria-label="Remove from wishlist"
             >
               
@@ -162,7 +162,7 @@ const WishlistCard = memo(({ item, onRemove }: WishlistCardProps) => {
               <button
                 onClick={handleAddToCart}
                 disabled={isLoading}
-                className="bg-[#5D5FEF] hover:bg-[#4B4DC9] text-white px-3 py-1.5 rounded-md text-xs font-medium transition-all duration-300 shadow-sm hover:shadow flex items-center gap-1 disabled:opacity-50"
+                className="cursor-pointer bg-[#5D5FEF] hover:bg-[#4B4DC9] text-white px-3 py-1.5 rounded-md text-xs font-medium transition-all duration-300 shadow-sm hover:shadow flex items-center gap-1 disabled:opacity-50"
               >
                 {localLoading ? (
                   <>

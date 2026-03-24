@@ -442,7 +442,7 @@ const ProductCard = memo(
             <button
               onClick={handleWishlistClick}
               disabled={isLoading || isDisabled}
-              className={`absolute top-2 right-2 w-8 h-8 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center transition-all duration-300 z-20 hover:scale-110 ${
+              className={`absolute cursor-pointer top-2 right-2 w-8 h-8 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center transition-all duration-300 z-20 hover:scale-110 ${
                 isWishlisted
                   ? "opacity-100 bg-red-50"
                   : "opacity-0 group-hover:opacity-100"
@@ -483,7 +483,7 @@ const ProductCard = memo(
                 <button
                   onClick={handleRemoveFromCart}
                   disabled={localCartLoading || !user}
-                  className="w-full bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-100 py-1.5 rounded-md font-semibold text-[10px] sm:text-xs transition-all duration-300 flex items-center justify-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full cursor-pointer bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-100 py-1.5 rounded-md font-semibold text-[10px] sm:text-xs transition-all duration-300 flex items-center justify-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <>
                     <Trash2 size={14} />
@@ -494,7 +494,7 @@ const ProductCard = memo(
                 <button
                   onClick={handleAddToCart}
                   disabled={localCartLoading || !user}
-                  className="w-full bg-[#5D5FEF] hover:bg-[#4B4DC9] text-white border border-transparent py-1.5 rounded-md font-medium text-[10px] sm:text-xs transition-all duration-300 flex items-center justify-center gap-1 disabled:opacity-50"
+                  className="w-full cursor-pointer bg-[#5D5FEF] hover:bg-[#4B4DC9] text-white border border-transparent py-1.5 rounded-md font-medium text-[10px] sm:text-xs transition-all duration-300 flex items-center justify-center gap-1 disabled:opacity-50"
                 >
                   <>
                     <ShoppingBag size={14} />
