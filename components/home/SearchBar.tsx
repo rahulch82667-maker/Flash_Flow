@@ -6,6 +6,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { Search, X, Loader2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useAppDispatch, useAppSelector } from "@/lib/redux/hooks";
+import { fetchSearchSuggestions, clearSearchSuggestions } from "@/lib/redux/features/products/productsSlice";
 
 // useDebounce hook
 export function useDebounce<T>(value: T, delay: number): T {
@@ -44,13 +46,14 @@ const categoryData = {
 
 export default function SearchBar({ isMobile, onCloseMobile }: SearchBarProps) {
   const [query, setQuery] = useState("");
-  const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
   const [categorySuggestions, setCategorySuggestions] = useState<any[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(-1);
   
   const router = useRouter();
+  const dispatch = useAppDispatch();
+  const { suggestions, suggestionsLoading: isLoading } = useAppSelector(state => state.products.search);
+  
   const dropdownRef = useRef<HTMLDivElement>(null);
   const debouncedQuery = useDebounce(query, 300);
 
@@ -104,32 +107,20 @@ export default function SearchBar({ isMobile, onCloseMobile }: SearchBarProps) {
 
   // Fetch suggestions when debounced query changes
   useEffect(() => {
-    const fetchSuggestions = async () => {
-      if (!debouncedQuery || debouncedQuery.length < 2) {
-        setSuggestions([]);
-        setIsOpen(false);
-        setIsLoading(false);
-        return;
-      }
+    if (!debouncedQuery || debouncedQuery.length < 2) {
+      dispatch(clearSearchSuggestions());
+      setIsOpen(false);
+      return;
+    }
 
-      setIsLoading(true);
-      try {
-        const res = await fetch(`/api/products/suggestions?q=${encodeURIComponent(debouncedQuery)}`);
-        if (res.ok) {
-          const data = await res.json();
-          setSuggestions(data.suggestions || []);
-          setIsOpen(true);
-        }
-      } catch (error) {
-        console.error("Failed to fetch search suggestions", error);
-      } finally {
-        setIsLoading(false);
+    dispatch(fetchSearchSuggestions(debouncedQuery)).then((res) => {
+      if (fetchSearchSuggestions.fulfilled.match(res)) {
+        setIsOpen(true);
       }
-    };
+    });
 
-    fetchSuggestions();
     setSelectedIndex(-1);
-  }, [debouncedQuery]);
+  }, [debouncedQuery, dispatch]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -171,7 +162,7 @@ export default function SearchBar({ isMobile, onCloseMobile }: SearchBarProps) {
   };
 
   return (
-    <div className={`relative ${isMobile ? "w-full" : "w-[300px] lg:w-[400px] xl:w-[500px]"}`} ref={dropdownRef}>
+    <div className={`relative ${isMobile ? "w-full" : "w-full max-w-[280px] xl:max-w-[340px]"}`} ref={dropdownRef}>
       <form onSubmit={handleSearch} className="relative w-full">
         <input
           type="text"
@@ -205,7 +196,7 @@ export default function SearchBar({ isMobile, onCloseMobile }: SearchBarProps) {
               type="button"
               onClick={() => {
                 setQuery("");
-                setSuggestions([]);
+                dispatch(clearSearchSuggestions());
                 setIsOpen(false);
               }}
               className="text-gray-400 hover:text-gray-600 transition-colors"

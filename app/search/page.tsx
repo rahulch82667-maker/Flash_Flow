@@ -20,7 +20,8 @@ import Navbar from "@/components/home/Navbar";
 import Footer from "@/components/Footer";
 import { auth } from "@/lib/firebase";
 import { onAuthStateChanged, signOut } from "firebase/auth";
-import { useAppSelector } from "@/lib/redux/hooks";
+import { useAppDispatch, useAppSelector } from "@/lib/redux/hooks";
+import { fetchSearchedProducts } from "@/lib/redux/features/products/productsSlice";
 
 const categoryData = {
   men: { name: "Men", subcategories: ["Clothing", "Footwear", "Sports", "Accessories"] },
@@ -63,10 +64,9 @@ function SearchClient() {
   const [showProfile, setShowProfile] = useState(false);
   const [authLoading, setAuthLoading] = useState(true);
 
-  const [products, setProducts] = useState<any[]>([]);
-  const [isSpecificProduct, setIsSpecificProduct] = useState(false);
-  const [loading, setLoading] = useState(true);
-  const [pagination, setPagination] = useState({ page: 1, limit: 12, total: 0, pages: 1 });
+  const dispatch = useAppDispatch();
+  const { results: products, loading, isSpecificProduct, pagination } = useAppSelector(state => state.products.search);
+
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
   
   const [expandedSections, setExpandedSections] = useState({
@@ -122,35 +122,18 @@ function SearchClient() {
 
   // Fetch product search
   useEffect(() => {
-    const fetchSearchedProducts = async () => {
-      setLoading(true);
-      try {
-        const params = new URLSearchParams();
-        if (q) params.append("q", q);
-        if (category) params.append("category", category);
-        if (subcategory) params.append("subcategory", subcategory);
-        if (minPrice) params.append("minPrice", minPrice);
-        if (maxPrice) params.append("maxPrice", maxPrice);
-        if (sortBy) params.append("sortBy", sortBy);
-        params.append("page", page.toString());
-        params.append("limit", "12");
+    const params = new URLSearchParams();
+    if (q) params.append("q", q);
+    if (category) params.append("category", category);
+    if (subcategory) params.append("subcategory", subcategory);
+    if (minPrice) params.append("minPrice", minPrice);
+    if (maxPrice) params.append("maxPrice", maxPrice);
+    if (sortBy) params.append("sortBy", sortBy);
+    params.append("page", page.toString());
+    params.append("limit", "12");
 
-        const res = await fetch(`/api/products/search?${params.toString()}`);
-        if (res.ok) {
-          const data = await res.json();
-          setProducts(data.products || []);
-          setIsSpecificProduct(data.isSpecificProduct || false);
-          setPagination(data.pagination || { page: 1, limit: 12, total: 0, pages: 1 });
-        }
-      } catch (e) {
-        console.error("Search fetch failed", e);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchSearchedProducts();
-  }, [q, category, subcategory, minPrice, maxPrice, sortBy, page]);
+    dispatch(fetchSearchedProducts(params));
+  }, [q, category, subcategory, minPrice, maxPrice, sortBy, page, dispatch]);
 
   // URL Updaters
   const updateURL = (updates: Record<string, string | null>) => {
@@ -197,13 +180,11 @@ function SearchClient() {
     updateURL({ category: null, subcategory: null, minPrice: null, maxPrice: null, sortBy: null, page: '1' });
   };
 
-  if (authLoading) return null;
-
   const hasActiveFilters = category || subcategory || minPrice || maxPrice;
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
-      <Navbar user={user} onProfileClick={() => setShowProfile(true)} onLogout={handleLogout} />
+      <Navbar user={user} authLoading={authLoading} onProfileClick={() => setShowProfile(true)} onLogout={handleLogout} />
       <main className="flex-grow pt-24 pb-12 mt-4 mb-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4 mb-8">
           <div className="mb-6">
@@ -412,8 +393,8 @@ function SearchClient() {
                 <>
                   <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
                     {products.map((product, idx) => (
-                      <motion.div key={product.id} initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: idx * 0.05 }} className="bg-white rounded-xl shadow-sm hover:shadow-lg transition-all border border-gray-100 overflow-hidden group">
-                        <Link href={`/product/${product.id}`}>
+                      <motion.div key={product._id} initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: idx * 0.05 }} className="bg-white rounded-xl shadow-sm hover:shadow-lg transition-all border border-gray-100 overflow-hidden group">
+                        <Link href={`/product/${product._id}`}>
                           <div className="relative aspect-square overflow-hidden bg-gray-50">
                             <Image src={product.image} alt={product.title} fill className="object-cover transition-transform duration-700 group-hover:scale-110" />
                           </div>

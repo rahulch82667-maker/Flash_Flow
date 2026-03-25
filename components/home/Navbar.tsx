@@ -30,12 +30,14 @@ interface NavbarProps {
   } | null;
   onProfileClick?: () => void;
   onLogout?: () => void;
+  authLoading?: boolean;
 }
 
 export default function Navbar({
   user,
   onProfileClick,
   onLogout,
+  authLoading,
 }: NavbarProps) {
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -89,9 +91,9 @@ export default function Navbar({
 
   return (
     <nav className="fixed top-0 inset-x-0 bg-white/90 backdrop-blur-xl z-50 border-b border-gray-200/50 shadow-md">
-      <div className="px-6 sm:px-8 md:px-10 max-w-7xl mx-auto">
+      <div className="px-6 sm:px-8 md:px-10 max-w-[1500px] mx-auto">
         {/* Main Row - Logo, Menu Items, Icons and Profile */}
-        <div className="h-20 flex items-center justify-between gap-4">
+        <div className="h-16 sm:h-[72px] flex items-center justify-between gap-4">
           {/* Left Section - Logo and Mobile Menu */}
           <div className="flex items-center gap-2 sm:gap-4">
             <button
@@ -167,7 +169,12 @@ export default function Navbar({
           </div>
 
           {/* Right Section - Icons and Profile */}
-          <div className="flex items-center gap-3 sm:gap-5">
+          <div className="flex items-center gap-2 sm:gap-4">
+            {/* Desktop Search Inline */}
+            <div className="hidden lg:block shrink-0 mr-1">
+               <SearchBar />
+            </div>
+
             {/* Wishlist Icon */}
             <Link
               href="/wishlist"
@@ -215,7 +222,11 @@ export default function Navbar({
             </Link>
 
             {/* Profile Button */}
-            {user ? (
+            {authLoading ? (
+              <div className="relative flex items-center justify-center">
+                <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-gray-200 animate-pulse border border-white/50 shadow-sm" />
+              </div>
+            ) : user ? (
               <div className="relative">
                 <motion.button
                   onClick={() => setIsProfileMenuOpen(!isProfileMenuOpen)}
@@ -365,15 +376,6 @@ export default function Navbar({
                 </Link>
               </div>
             )}
-          </div>
-        </div>
-
-        {/* Desktop Search Bar - Right Aligned */}
-        <div className="hidden lg:block py-4 border-t border-gray-100/50">
-          <div className="flex justify-end">
-            <div className="w-[400px]">
-              <SearchBar />
-            </div>
           </div>
         </div>
       </div>
